@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- This URDF was automatically created by SolidWorks to URDF Exporter! Originally created by Stephen Brawner (brawner@gmail.com) 
+     Commit Version: 1.6.0-4-g7f85cfe  Build Version: 1.6.7995.38578
+     For more information, please see http://wiki.ros.org/sw_urdf_exporter -->
+<robot
+  name="kafeiche"
+  xmlns:xacro="http://www.ros.org/wiki/xacro">
+    <!-- Matherials -->
+    <xacro:include filename="$(find kafeiche_description)/urdf/kafeiche_materials.xacro" />
+ 
+    
+    <!-- Wheels and bases for them -->
+    <xacro:property name="wheel_radius" value="0.075"/>
+    <xacro:property name="wheel_separation" value="0.273"/>
+    <xacro:property name="wheel_width" value="0.03"/>
+    <xacro:property name="clearance" value="0.15" />
+    <xacro:include filename="$(find kafeiche_description)/urdf/kafeiche_front_wheel_base.xacro" />
+    <xacro:include filename="$(find kafeiche_description)/urdf/kafeiche_front_wheel.xacro" />
+    <xacro:include filename="$(find kafeiche_description)/urdf/kafeiche_left_wheel_base.xacro" />
+    <xacro:include filename="$(find kafeiche_description)/urdf/kafeiche_left_wheel.xacro" />
+    <xacro:include filename="$(find kafeiche_description)/urdf/kafeiche_right_wheel_base.xacro" />
+    <xacro:include filename="$(find kafeiche_description)/urdf/kafeiche_right_wheel.xacro" />
+
+
+  <link
+    name="kafeiche_base">
+    <inertial>
+      <origin
+        xyz="-0.046471 0.00017685 -0.11146"
+        rpy="0 0 0" />
+      <mass
+        value="1.2" />
+      <inertia
+        ixx="0.010329"
+        ixy="-3.1343E-05"
+        ixz="0.00095779"
+        iyy="0.016048"
+        iyz="-0.00013868"
+        izz="0.024377" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://kafeiche_description/meshes/kafeiche_base.stl" />
+      </geometry>
+      <material
+        name="White">
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://kafeiche_description/meshes/kafeiche_base.stl" />
+      </geometry>
+    </collision>
+  </link>
+    <!-- base_link -->
+  <link name="base_link">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+                <sphere radius="0.001" />
+            </geometry>
+    </visual>
+  </link>
+    <joint name="base_link_to_kafeiche_base" type="fixed">
+        <origin xyz="0 0 0" rpy="0 0 0" />
+        <parent link="base_link" />
+        <child link="kafeiche_base" />
+    </joint>
+    <!-- base_footprint -->
+<link name="base_footprint">
+    <visual>
+        <origin xyz="0 0 0" rpy="0 0 0" />
+        <geometry>
+            <box size="0.5 0.34 0.001" />
+        </geometry>
+        <material name="Blue" />
+    </visual>
+</link>
+<joint name="base_footprint_to_base_link" type="fixed">
+    <origin xyz="0 0 ${clearance}" rpy="0 0 0" />
+    <parent link="base_footprint" />
+    <child link="base_link" />
+</joint>
+</robot>
+
+

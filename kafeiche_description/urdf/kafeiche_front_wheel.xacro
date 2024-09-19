@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<robot name="kafeiche"
+    xmlns:xacro="http://www.ros.org/wiki/xacro">
+    <!-- front_wheel -->
+<link
+    name="link_front_wheel">
+    <inertial>
+      <origin
+        xyz="4.1128E-06 0.00035104 -1.2434E-06"
+        rpy="0 0 0" />
+      <mass
+        value="0.17586" />
+      <inertia
+        ixx="0.00025233"
+        ixy="-1.0064E-09"
+        ixz="-7.7822E-09"
+        iyy="0.00048027"
+        iyz="2.3165E-10"
+        izz="0.00025235" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://kafeiche_description/meshes/link_front_wheel.stl" />
+      </geometry>
+      <material
+        name="Yellow">
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://kafeiche_description/meshes/link_front_wheel.stl" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="joint_front_wheel"
+    type="continuous">
+    <origin
+      xyz="0.09634 0.00026026 -0.1276"
+      rpy="0 -3.5513E-05 0" />
+    <parent
+      link="link_front_wheel_base" />
+    <child
+      link="link_front_wheel" />
+    <axis
+      xyz="0 -1 0" />
+  </joint>
+</robot>
