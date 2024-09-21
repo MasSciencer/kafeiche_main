@@ -1,0 +1,7 @@
+<launch>
+	<node name="diff_kafeiche_system" pkg="kafeiche_control" type="diff_kafeiche_system" output="screen" >
+		<param name="control_frequency" type="int" value="100" />
+		<param name="max_wheel_angular_speed" type="double" value="12.0" />
+	</node>
+</launch>
+
