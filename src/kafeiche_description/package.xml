@@ -15,8 +15,6 @@ for kafeiche robot.</p>
   <buildtool_depend>ament_cmake</buildtool_depend>
 
   <!-- Package dependencies -->
-  <depend>robot_state_publisher</depend>
-  <depend>joint_state_publisher_gui</depend>
   <depend>urdf</depend>
   <depend>tf</depend>
   <depend>xacro</depend>

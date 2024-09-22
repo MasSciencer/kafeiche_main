@@ -20,18 +20,16 @@ set(THIS_PACKAGE_INCLUDE_DEPENDS
 )
 
 # find dependencies
-find_package(backward_ros REQUIRED)
 find_package(ament_cmake REQUIRED)
 foreach(Dependency IN ITEMS ${THIS_PACKAGE_INCLUDE_DEPENDS})
   find_package(${Dependency} REQUIRED)
 endforeach()
 
 # Specify the required version of ros2_control
-find_package(controller_manager 4.0.0)
+find_package(controller_manager 2.43.1)
 # Handle the case where the required version is not found
 if(NOT controller_manager_FOUND)
-  message(FATAL_ERROR "ros2_control version 4.0.0 or higher is required. "
-  "Are you using the correct branch of the ros2_control_demos repository?")
+  message(FATAL_ERROR "ros2_control version 2.43.1 or higher is required. ")
 endif()
 
 # Find WiringPi library
@@ -43,18 +41,24 @@ endif()
 # Add executable
 add_executable(encoders src/encoders.cpp)
 add_executable(motor src/motor.cpp)
-add_executable(diffriver src/diffriver/diffriver_system.cpp)
 
 target_link_libraries(encoders ${WIRINGPI_LIBRARIES})
 target_link_libraries(motor ${WIRINGPI_LIBRARIES})
 
-ament_target_dependencies(
-  ${THIS_PACKAGE_INCLUDE_DEPENDS}
+
+# Export hardware plugins
+pluginlib_export_plugin_description_file(hardware_interface plugins.xml)
+
+# Install the executable 
+install(
+  TARGETS encoders
+  DESTINATION lib/${PROJECT_NAME}
+)
+install(
+  TARGETS motor
+  DESTINATION lib/${PROJECT_NAME}
 )
 
-# Install the executable
-install(TARGETS encoders motor diffriver
-  DESTINATION lib/${PROJECT_NAME})
 
 ## EXPORTS
 ament_export_dependencies(${THIS_PACKAGE_INCLUDE_DEPENDS})
