@@ -5,15 +5,15 @@
 <robot
   name="kafeiche"
   xmlns:xacro="http://www.ros.org/wiki/xacro">
-    <!-- Matherials -->
+	
+	<!-- Variables -->
+	<xacro:property name="clearance" value="0.15" />
+	
+	<!-- Matherials -->
     <xacro:include filename="$(find kafeiche_description)/urdf/kafeiche_materials.xacro" />
  
     
     <!-- Wheels and bases for them -->
-    <xacro:property name="wheel_radius" value="0.075"/>
-    <xacro:property name="wheel_separation" value="0.273"/>
-    <xacro:property name="wheel_width" value="0.03"/>
-    <xacro:property name="clearance" value="0.15" />
     <xacro:include filename="$(find kafeiche_description)/urdf/kafeiche_front_wheel_base.xacro" />
     <xacro:include filename="$(find kafeiche_description)/urdf/kafeiche_front_wheel.xacro" />
     <xacro:include filename="$(find kafeiche_description)/urdf/kafeiche_left_wheel_base.xacro" />
@@ -21,6 +21,11 @@
     <xacro:include filename="$(find kafeiche_description)/urdf/kafeiche_right_wheel_base.xacro" />
     <xacro:include filename="$(find kafeiche_description)/urdf/kafeiche_right_wheel.xacro" />
 
+	<!-- Ros2 Control hardware interfaces -->
+	<xacro:include filename="kafeiche_control.xacro" />
+
+	<parameters>$(find kafeiche_drivers)/config/kafeiche_controllers.yaml</parameters>
+	
 
   <link
     name="kafeiche_base">

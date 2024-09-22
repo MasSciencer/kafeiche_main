@@ -10,10 +10,10 @@ public:
 
         // Подписчики для левого и правого двигателей
         left_motor_target_vel_sub_ = this->create_subscription<std_msgs::msg::Float64>(
-            "/kafeiche/left_wheel/rpm", 10, std::bind(&StepperMotorNode::leftMotorCallback, this, std::placeholders::_1));
+            "/kfc/left_wheel/rpm", 10, std::bind(&StepperMotorNode::leftMotorCallback, this, std::placeholders::_1));
 
         right_motor_target_vel_sub_ = this->create_subscription<std_msgs::msg::Float64>(
-            "/kafeiche/right_wheel/rpm", 10, std::bind(&StepperMotorNode::rightMotorCallback, this, std::placeholders::_1));
+            "/kfc/right_wheel/rpm", 10, std::bind(&StepperMotorNode::rightMotorCallback, this, std::placeholders::_1));
     }
 
 private:
