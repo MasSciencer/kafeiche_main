@@ -24,6 +24,7 @@
 	<!-- Ros2 Control hardware interfaces -->
 	<xacro:include filename="kafeiche_control.xacro" />
 
+	<!-- Link for yaml -->
 	<parameters>$(find kafeiche_drivers)/config/kafeiche_controllers.yaml</parameters>
 	
 

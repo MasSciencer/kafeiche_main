@@ -76,8 +76,8 @@ namespace diffdrivers
         Wheel wheel_r_;
 
         // Implementation PID-control
-        control_toolbox::Pid pid_left;  // call class Pid
-        control_toolbox::Pid pid_right;
+        control_toolbox::Pid pid_left_;  // call class Pid for left wheel
+        control_toolbox::Pid pid_right_; // call class Pid for right wheel
     };
 
 }

@@ -67,16 +67,17 @@ void EncodersPair::encodersCallback() {
     _last_time = this_time;
 
     // Get delta from encoders
-    _left_wheel_delta = _encoder_left.get_del_left() / RATIO;
-    _right_wheel_delta = _encoder_right.get_del_right() / RATIO;
+    _left_wheel_delta = _encoder_left.get_del_left() / RATIO * RADIUS; //Ratio of stepper motor based on gearbox ration 
+    _right_wheel_delta = _encoder_right.get_del_right() / RATIO * RADIUS;
 
-    // Calculate and publish velocities
-    _left_wheel_position += _left_wheel_delta;
-    _right_wheel_position += _right_wheel_delta;
+    // Calculate position
+    _left_wheel_position += _left_wheel_delta; //m
+    _right_wheel_position += _right_wheel_delta; //m
 
+    // Calculate velocity
     if (elapsed_duration.count() > 0) {
-        _left_wheel_velocity = _left_wheel_delta / elapsed_duration.count();
-        _right_wheel_velocity = _right_wheel_delta / elapsed_duration.count();
+        _left_wheel_velocity = _left_wheel_delta / elapsed_duration.count() * RADIUS; //m/s
+        _right_wheel_velocity = _right_wheel_delta / elapsed_duration.count() * RADIUS; //m/s
     } else {
         _left_wheel_velocity = 0.0f;
         _right_wheel_velocity = 0.0f;

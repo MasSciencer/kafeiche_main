@@ -15,6 +15,7 @@
 #define REGx04 0x84
 #define MT6816_CPR 16384
 #define RATIO 3.7
+#define RADIUS 0.075
 
 class EncoderWiringPi {
 public:

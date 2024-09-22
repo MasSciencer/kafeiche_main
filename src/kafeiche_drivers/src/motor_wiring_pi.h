@@ -65,7 +65,9 @@ void StepperMotorWiringPi::setSpeed(int16_t target_rpm) {
 void StepperMotorWiringPi::run() {
     while (running_) {
         int16_t rpm = current_rpm_;
-        if (std::abs(rpm) > 1500) {
+
+        //hardware evaluation of min velocity
+        if (std::abs(rpm) > 150) {
             uint16_t step_delay = rpmToDelay(std::abs(rpm));
             digitalWrite(_enable_pin, LOW);
             digitalWrite(_direction_pin, rpm > 0 ? LOW : HIGH);
@@ -74,6 +76,18 @@ void StepperMotorWiringPi::run() {
             delayMicroseconds(step_delay);
             digitalWrite(_step_pin, LOW);
             delayMicroseconds(step_delay);
+
+        //hardware evaluation of max velocity
+        if (std::abs(rpm) > 1200) {
+            uint16_t step_delay = rpmToDelay(1200);
+            digitalWrite(_enable_pin, LOW);
+            digitalWrite(_direction_pin, rpm > 0 ? LOW : HIGH);
+
+            digitalWrite(_step_pin, HIGH);
+            delayMicroseconds(step_delay);
+            digitalWrite(_step_pin, LOW);
+            delayMicroseconds(step_delay);
+
         } else {
             stop();
             std::this_thread::sleep_for(std::chrono::milliseconds(10));

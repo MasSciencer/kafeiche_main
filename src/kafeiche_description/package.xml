@@ -16,7 +16,6 @@ for kafeiche robot.</p>
 
   <!-- Package dependencies -->
   <depend>robot_state_publisher</depend>
-  <depend>rviz2</depend>
   <depend>joint_state_publisher_gui</depend>
   <depend>urdf</depend>
   <depend>tf</depend>

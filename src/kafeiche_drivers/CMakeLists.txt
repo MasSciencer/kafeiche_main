@@ -8,10 +8,31 @@ if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   add_compile_options(-Wall -Wextra -Wpedantic)
 endif()
 
-# Find dependencies
+
+# find dependencies
+set(THIS_PACKAGE_INCLUDE_DEPENDS
+  hardware_interface
+  pluginlib
+  std_msgs
+  rclcpp
+  rclcpp_lifecycle
+  control_toolbox
+)
+
+# find dependencies
+find_package(backward_ros REQUIRED)
 find_package(ament_cmake REQUIRED)
-find_package(rclcpp REQUIRED)
-find_package(std_msgs REQUIRED)
+foreach(Dependency IN ITEMS ${THIS_PACKAGE_INCLUDE_DEPENDS})
+  find_package(${Dependency} REQUIRED)
+endforeach()
+
+# Specify the required version of ros2_control
+find_package(controller_manager 4.0.0)
+# Handle the case where the required version is not found
+if(NOT controller_manager_FOUND)
+  message(FATAL_ERROR "ros2_control version 4.0.0 or higher is required. "
+  "Are you using the correct branch of the ros2_control_demos repository?")
+endif()
 
 # Find WiringPi library
 find_library(WIRINGPI_LIBRARIES wiringPi)
@@ -22,23 +43,19 @@ endif()
 # Add executable
 add_executable(encoders src/encoders.cpp)
 add_executable(motor src/motor.cpp)
-
-# Link the libraries
-ament_target_dependencies(encoders
-  rclcpp
-  std_msgs
-)
-
-ament_target_dependencies(motor
-  rclcpp
-  std_msgs
-)
+add_executable(diffriver src/diffriver/diffriver_system.cpp)
 
 target_link_libraries(encoders ${WIRINGPI_LIBRARIES})
 target_link_libraries(motor ${WIRINGPI_LIBRARIES})
 
+ament_target_dependencies(
+  ${THIS_PACKAGE_INCLUDE_DEPENDS}
+)
+
 # Install the executable
-install(TARGETS encoders motor
+install(TARGETS encoders motor diffriver
   DESTINATION lib/${PROJECT_NAME})
 
+## EXPORTS
+ament_export_dependencies(${THIS_PACKAGE_INCLUDE_DEPENDS})
 ament_package()
