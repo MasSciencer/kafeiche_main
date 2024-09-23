@@ -183,4 +183,4 @@ hardware_interface::CallbackReturn DiffBotSystemHardware::on_init(
 
 #include "pluginlib/class_list_macros.hpp"
 PLUGINLIB_EXPORT_CLASS(
-    diffdriver::DiffDriverKfcHardware, hardware_interface::SystemInterface)
+    kafeiche_drivers::DiffDriverKfcHardware, hardware_interface::SystemInterface)
