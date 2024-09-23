@@ -78,10 +78,7 @@ install(TARGETS kafeiche_drivers
   RUNTIME DESTINATION bin/${PROJECT_NAME}
 )
 
-if(BUILD_TESTING)
-  find_package(ament_cmake_gtest REQUIRED)
-endif()
-
+## EXPORTS
 ## EXPORTS
 ament_export_targets(export_kafeiche_drivers HAS_LIBRARY_TARGET)
 ament_export_dependencies(${THIS_PACKAGE_INCLUDE_DEPENDS})
