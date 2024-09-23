@@ -38,20 +38,26 @@ if(NOT WIRINGPI_LIBRARIES)
     message(FATAL_ERROR "WiringPi library not found!")
 endif()
 
-# Add executable
-add_executable(encoders src/encoders.cpp)
-add_executable(motor src/motor.cpp)
 
-target_link_libraries(encoders ${WIRINGPI_LIBRARIES})
+
+# Add executable
+add_executable(encoder hardware/encoder.cpp)
+add_executable(motor hardware/motor.cpp)
+
+target_link_libraries(encoder ${WIRINGPI_LIBRARIES})
 target_link_libraries(motor ${WIRINGPI_LIBRARIES})
 
+ament_target_dependencies(encoder std_msgs rclcpp)
+ament_target_dependencies(motor std_msgs rclcpp)
 
 # Export hardware plugins
 pluginlib_export_plugin_description_file(hardware_interface plugins.xml)
 
-# Install the executable 
+# Install the executable
+# INSTALL
+
 install(
-  TARGETS encoders
+  TARGETS encoder
   DESTINATION lib/${PROJECT_NAME}
 )
 install(
@@ -59,7 +65,8 @@ install(
   DESTINATION lib/${PROJECT_NAME}
 )
 
+message(STATUS "CMAKE_INCLUDE_PATH: ${CMAKE_INCLUDE_PATH}")
+message(STATUS "rclcpp_INCLUDE_DIRS: ${rclcpp_INCLUDE_DIRS}")
 
 ## EXPORTS
-ament_export_dependencies(${THIS_PACKAGE_INCLUDE_DEPENDS})
 ament_package()
