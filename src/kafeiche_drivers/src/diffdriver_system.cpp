@@ -13,7 +13,7 @@
 
 namespace kafeiche_drivers
 {
-hardware_interface::CallbackReturn DiffBotSystemHardware::on_init(
+hardware_interface::CallbackReturn DiffDriverKfcHardware::on_init(
   const hardware_interface::HardwareInfo & info)
     {
         if (
@@ -61,7 +61,7 @@ hardware_interface::CallbackReturn DiffBotSystemHardware::on_init(
 
         for (const hardware_interface::ComponentInfo& joint : info_.joints)
         {
-            // DiffBotSystem has exactly two states and one command interface on each joint
+            // DiffDriverKfcHardware has exactly two states and one command interface on each joint
             if (joint.command_interfaces.size() != 1)
             {
                 RCLCPP_FATAL(
@@ -183,4 +183,4 @@ hardware_interface::CallbackReturn DiffBotSystemHardware::on_init(
 
 #include "pluginlib/class_list_macros.hpp"
 PLUGINLIB_EXPORT_CLASS(
-    diffdriver::DiffDriverKfcHardware, hardware_interface::SystemInterface)
+    kafeiche_drivers::DiffDriverKfcHardware, hardware_interface::SystemInterface)
