@@ -1,21 +1,20 @@
-﻿#include <chrono>
+#include "kafeiche_drivers/diffdriver_system.hpp"
+
+#include <chrono>
 #include <cmath>
 #include <limits>
 #include <memory>
 #include <vector>
 
-#include "diffdriver_system.h"
 #include "hardware_interface/types/hardware_interface_type_values.hpp"
 #include "rclcpp/rclcpp.hpp"
-#include "std_msgs/msg/float64.hpp"
 #include "control_toolbox/pid.hpp"
 
-namespace diffdriver
+
+namespace kafeiche_drivers
 {
-
-
-    hardware_interface::CallbackReturn DiffDriverKfcHardware::on_init(
-        const hardware_interface::HardwareInfo& info)
+hardware_interface::CallbackReturn DiffBotSystemHardware::on_init(
+  const hardware_interface::HardwareInfo & info)
     {
         if (
             hardware_interface::SystemInterface::on_init(info) !=
@@ -142,7 +141,7 @@ namespace diffdriver
         return command_interfaces;
     }
 
-    hardware_interface::CallbackReturn DiffDriveArduinoHardware::on_configure(
+    hardware_interface::CallbackReturn DiffDriveKfcHardware::on_configure(
         const rclcpp_lifecycle::State& /*previous_state*/)
     {
 
@@ -179,9 +178,8 @@ namespace diffdriver
         right_rpm_pub_->publish(right_rpm_msg);
 
         return hardware_interface::return_type::OK;
-    }
-
-}  // namespace diffdriver
+};
+}  // end namespace
 
 #include "pluginlib/class_list_macros.hpp"
 PLUGINLIB_EXPORT_CLASS(

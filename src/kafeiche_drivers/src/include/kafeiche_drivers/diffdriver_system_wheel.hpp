@@ -1,5 +1,5 @@
-#ifndef DIFFDRIVE_SYSTEM_WHEEL_H
-#define DIFFDRIVE_SYSTEM_WHEEL_H
+#ifndef DIFFDRIVE_SYSTEM_WHEEL_HPP
+#define DIFFDRIVE_SYSTEM_WHEEL_HPP
 
 #include <string>
 #include <cmath>

@@ -39,14 +39,14 @@ if(NOT WIRINGPI_LIBRARIES)
 endif()
 
 # Add executable
-add_executable(encoder hardware/encoder.cpp)
-add_executable(motor hardware/motor.cpp)
+add_executable(encoder src/encoder.cpp)
+add_executable(motor src/motor.cpp)
 
 #Here we implement cpp as library and next we we put it into plugin
 add_library(
-  diffdriver_system
+  kafeiche_drivers
   SHARED
-  hardware/diffdriver_system.cpp
+  src/diffdriver_system.cpp
 )
 
 target_link_libraries(encoder ${WIRINGPI_LIBRARIES})
@@ -55,10 +55,10 @@ target_link_libraries(motor ${WIRINGPI_LIBRARIES})
 #That is very importaint part which matches #includ and own libraries 
 ament_target_dependencies(encoder std_msgs rclcpp) #this executable file depends only on 2 ROS2 packages
 ament_target_dependencies(motor std_msgs rclcpp) #this executable file depends only on 2 ROS2 packages
-ament_target_dependencies(diffdriver_system PUBLIC ${THIS_PACKAGE_INCLUDE_DEPENDS}) #this executable file depends on many ROS2 packages
+ament_target_dependencies(kafeiche_drivers PUBLIC ${THIS_PACKAGE_INCLUDE_DEPENDS}) #this executable file depends on many ROS2 packages
  
 # Export hardware plugins
-pluginlib_export_plugin_description_file(hardware_interface diffdriver_system.xml)
+pluginlib_export_plugin_description_file(hardware_interface kafeiche_drivers.xml)
 
 # Install the executable
 install(
@@ -71,8 +71,8 @@ install(
 )
 
 # Install library
-install(TARGETS diffdriver_system
-  EXPORT export_diffdriver_system
+install(TARGETS kafeiche_drivers
+  EXPORT export_kafeiche_drivers
   ARCHIVE DESTINATION lib/${PROJECT_NAME}
   LIBRARY DESTINATION lib/${PROJECT_NAME}
   RUNTIME DESTINATION bin/${PROJECT_NAME}
@@ -80,6 +80,6 @@ install(TARGETS diffdriver_system
 
 ## EXPORTS
 ## EXPORTS
-ament_export_targets(export_diffdriver_system HAS_LIBRARY_TARGET)
+ament_export_targets(export_kafeiche_drivers HAS_LIBRARY_TARGET)
 ament_export_dependencies(${THIS_PACKAGE_INCLUDE_DEPENDS})
 ament_package()
