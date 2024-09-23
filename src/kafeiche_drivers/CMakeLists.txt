@@ -38,24 +38,29 @@ if(NOT WIRINGPI_LIBRARIES)
     message(FATAL_ERROR "WiringPi library not found!")
 endif()
 
-
-
 # Add executable
 add_executable(encoder hardware/encoder.cpp)
 add_executable(motor hardware/motor.cpp)
 
+#Here we implement cpp as library and next we we put it into plugin
+add_library(
+  diffdriver_system
+  SHARED
+  hardware/diffdriver_system.cpp
+)
+
 target_link_libraries(encoder ${WIRINGPI_LIBRARIES})
 target_link_libraries(motor ${WIRINGPI_LIBRARIES})
 
-ament_target_dependencies(encoder std_msgs rclcpp)
-ament_target_dependencies(motor std_msgs rclcpp)
-
+#That is very importaint part which matches #includ and own libraries 
+ament_target_dependencies(encoder std_msgs rclcpp) #this executable file depends only on 2 ROS2 packages
+ament_target_dependencies(motor std_msgs rclcpp) #this executable file depends only on 2 ROS2 packages
+ament_target_dependencies(diffdriver_system PUBLIC ${THIS_PACKAGE_INCLUDE_DEPENDS}) #this executable file depends on many ROS2 packages
+ 
 # Export hardware plugins
-pluginlib_export_plugin_description_file(hardware_interface plugins.xml)
+pluginlib_export_plugin_description_file(hardware_interface diffdriver_system.xml)
 
 # Install the executable
-# INSTALL
-
 install(
   TARGETS encoder
   DESTINATION lib/${PROJECT_NAME}
@@ -65,8 +70,16 @@ install(
   DESTINATION lib/${PROJECT_NAME}
 )
 
-message(STATUS "CMAKE_INCLUDE_PATH: ${CMAKE_INCLUDE_PATH}")
-message(STATUS "rclcpp_INCLUDE_DIRS: ${rclcpp_INCLUDE_DIRS}")
+# Install library
+install(TARGETS diffdriver_system
+  EXPORT export_diffdriver_system
+  ARCHIVE DESTINATION lib/${PROJECT_NAME}
+  LIBRARY DESTINATION lib/${PROJECT_NAME}
+  RUNTIME DESTINATION bin/${PROJECT_NAME}
+)
 
 ## EXPORTS
+## EXPORTS
+ament_export_targets(export_diffdriver_system HAS_LIBRARY_TARGET)
+ament_export_dependencies(${THIS_PACKAGE_INCLUDE_DEPENDS})
 ament_package()
