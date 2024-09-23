@@ -79,7 +79,6 @@ install(TARGETS kafeiche_drivers
 )
 
 ## EXPORTS
-## EXPORTS
 ament_export_targets(export_kafeiche_drivers HAS_LIBRARY_TARGET)
 ament_export_dependencies(${THIS_PACKAGE_INCLUDE_DEPENDS})
 ament_package()
