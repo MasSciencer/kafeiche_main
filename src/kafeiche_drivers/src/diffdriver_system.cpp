@@ -29,10 +29,6 @@ hardware_interface::CallbackReturn DiffKfc::on_init(
         wheel_l_.setup(cfg_.left_wheel_name);
         wheel_r_.setup(cfg_.right_wheel_name);
 
-        left_rpm_pub_ = node->create_publisher<std_msgs::msg::Float64>(
-            "/kfc/left_wheel/rpm", rclcpp::QoS(10));
-        right_rpm_pub_ = node->create_publisher<std_msgs::msg::Float64>(
-            "/kfc/right_wheel/rpm", rclcpp::QoS(10));
 
         for (const hardware_interface::ComponentInfo& joint : info_.joints)
         {
@@ -116,15 +112,9 @@ hardware_interface::CallbackReturn DiffKfc::on_init(
         return command_interfaces;
     }
 
-    hardware_interface::CallbackReturn DiffDriveKfcHardware::on_configure(
+    hardware_interface::CallbackReturn DiffKfc::on_configure(
         const rclcpp_lifecycle::State& /*previous_state*/)
     {
-
-        pid_left_.initPid(P_p, I_p, D_p, i_max_p, i_min_p);
-        pid_right_.initPid(P_p, I_p, D_p, i_max_p, i_min_p); 
-        last_time_ = this->now();
-        last_period_ = rclcpp::Duration(0);
-
         return hardware_interface::CallbackReturn::SUCCESS;
     }
 
@@ -135,25 +125,11 @@ hardware_interface::CallbackReturn DiffKfc::on_init(
         return hardware_interface::return_type::OK;
     }
 
-    hardware_interface::return_type diffdriver::DiffKfc::write(
+    hardware_interface::return_type kafeiche_drivers::DiffKfc::write(
         const rclcpp::Time& /*time*/, const rclcpp::Duration& /*period*/)
     {
-
-        static rclcpp::Time last_time = time;
-        double dt = (time - last_time).nanoseconds() * 1e-9;  // Переводим в секунды
-        last_time = time;
-
-         // Publisher RPM
-        std_msgs::msg::Float64 left_rpm_msg;
-        left_rpm_msg.data = pid_left_.computeCommand(wheel_l_.cmd - wheel_l_.vel, dt); // Сглаживание значений через PID for left
-        left_rpm_pub_->publish(left_rpm_msg);
-
-        std_msgs::msg::Float64 right_rpm_msg;
-        right_rpm_msg.data = pid_right_.computeCommand(wheel_r_.cmd - wheel_r_.vel, dt); // Сглаживание значений через PID for right
-        right_rpm_pub_->publish(right_rpm_msg);
-
         return hardware_interface::return_type::OK;
-};
+    };
 }  // end namespace
 
 #include "pluginlib/class_list_macros.hpp"

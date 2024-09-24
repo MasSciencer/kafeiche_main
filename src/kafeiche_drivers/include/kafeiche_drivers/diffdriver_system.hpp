@@ -46,7 +46,7 @@ struct Config
 
 
     public:
-        RCLCPP_SHARED_PTR_DEFINITIONS(DiffKfc);
+        RCLCPP_SHARED_PTR_DEFINITIONS(DiffKfc)
 
             hardware_interface::CallbackReturn on_init(
                 const hardware_interface::HardwareInfo& info) override;

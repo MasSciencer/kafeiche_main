@@ -1,9 +1,11 @@
-import os
-from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
+from launch.actions import RegisterEventHandler
+from launch.event_handlers import OnProcessExit
+from launch.substitutions import Command, FindExecutable, PathJoinSubstitution
 from launch_ros.actions import Node
-from launch.substitutions import Command 
-from launch_ros.parameter_descriptions import ParameterValue 
+from launch_ros.substitutions import FindPackageShare
+from launch_ros.parameter_descriptions import ParameterValue
+
 
 def generate_launch_description():
     robot_description_content = Command(
@@ -16,7 +18,7 @@ def generate_launch_description():
         ]
     )
     
-    robot_description = {"robot_description": robot_description_content}
+    robot_description = {"robot_description": ParameterValue(robot_description_content, value_type=str)}
 
     robot_controllers = PathJoinSubstitution(
         [
@@ -84,12 +86,12 @@ def generate_launch_description():
 
     #summary
     nodes = [
-        control_node,
-        robot_state_pub_node,
-        joint_state_broadcaster_spawner,
+        #control_node, //Needed test
+        #robot_state_pub_node, //Needed test
+        #joint_state_broadcaster_spawner, //Needed test
         hardware_encoder,
         hardware_motor,
-        delay_robot_controller_spawner_after_joint_state_broadcaster_spawner,
+        #delay_robot_controller_spawner_after_joint_state_broadcaster_spawner, //Needed test
     ]
 
     return LaunchDescription(nodes)
