@@ -51,6 +51,13 @@ add_library(
 
 target_link_libraries(encoder ${WIRINGPI_LIBRARIES})
 target_link_libraries(motor ${WIRINGPI_LIBRARIES})
+target_link_libraries(kafeiche_drivers PUBLIC serial)
+
+target_compile_features(kafeiche_drivers PUBLIC cxx_std_17)
+target_include_directories(kafeiche_drivers PUBLIC
+$<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
+$<INSTALL_INTERFACE:include/kafeiche_drivers>
+)
 
 #That is very importaint part which matches #includ and own libraries 
 ament_target_dependencies(encoder std_msgs rclcpp) #this executable file depends only on 2 ROS2 packages
@@ -72,10 +79,7 @@ install(
 
 # Install library
 install(TARGETS kafeiche_drivers
-  EXPORT export_kafeiche_drivers
-  ARCHIVE DESTINATION lib/${PROJECT_NAME}
-  LIBRARY DESTINATION lib/${PROJECT_NAME}
-  RUNTIME DESTINATION bin/${PROJECT_NAME}
+  DESTINATION lib/${PROJECT_NAME}
 )
 
 ## EXPORTS

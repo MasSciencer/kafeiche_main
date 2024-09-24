@@ -23,41 +23,16 @@ hardware_interface::CallbackReturn DiffBotSystemHardware::on_init(
             return hardware_interface::CallbackReturn::ERROR;
         }
 
-        // Implementation sub and creation of pub
-        auto node = rclcpp::Node::make_shared("diffdriver_node");
+        cfg_.left_wheel_name = info_.hardware_parameters["left_wheel_joint"];
+        cfg_.right_wheel_name = info_.hardware_parameters["right_wheel_joint"];
 
-        left_velocity_sub_ = node->create_subscription<std_msgs::msg::Float64>(
-            "/kfc/left_wheel/current_velocity", rclcpp::QoS(10),
-            [this](const std_msgs::msg::Float64::SharedPtr msg) {
-                wheel_l_.vel = msg->data;
-            });
-
-        left_position_sub_ = node->create_subscription<std_msgs::msg::Float64>(
-            "/kfc/left_wheel/position", rclcpp::QoS(10),
-            [this](const std_msgs::msg::Float64::SharedPtr msg) {
-                wheel_l_.pos = msg->data;
-            });
-        right_velocity_sub_ = node->create_subscription<std_msgs::msg::Float64>(
-            "/kfc/right_wheel/current_velocity", rclcpp::QoS(10),
-            [this](const std_msgs::msg::Float64::SharedPtr msg) {
-                wheel_r_.vel = msg->data;
-            });
-
-        right_position_sub_ = node->create_subscription<std_msgs::msg::Float64>(
-            "/kfc/right_wheel/position", rclcpp::QoS(10),
-            [this](const std_msgs::msg::Float64::SharedPtr msg) {
-                wheel_r_.pos = msg->data;
-            });
+        wheel_l_.setup(cfg_.left_wheel_name);
+        wheel_r_.setup(cfg_.right_wheel_name);
 
         left_rpm_pub_ = node->create_publisher<std_msgs::msg::Float64>(
             "/kfc/left_wheel/rpm", rclcpp::QoS(10));
         right_rpm_pub_ = node->create_publisher<std_msgs::msg::Float64>(
             "/kfc/right_wheel/rpm", rclcpp::QoS(10));
-
-
-
-        cfg_.left_wheel_name = info_.hardware_parameters["left_wheel_name"];
-        cfg_.right_wheel_name = info_.hardware_parameters["right_wheel_name"];
 
         for (const hardware_interface::ComponentInfo& joint : info_.joints)
         {
