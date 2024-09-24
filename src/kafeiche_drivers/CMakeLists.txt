@@ -79,6 +79,7 @@ install(
 
 # Install library
 install(TARGETS kafeiche_drivers
+  EXPORT export_kafeiche_drivers
   DESTINATION lib/${PROJECT_NAME}
 )
 

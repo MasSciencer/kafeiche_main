@@ -13,7 +13,7 @@
 
 namespace kafeiche_drivers
 {
-hardware_interface::CallbackReturn DiffBotSystemHardware::on_init(
+hardware_interface::CallbackReturn DiffKfc::on_init(
   const hardware_interface::HardwareInfo & info)
     {
         if (
@@ -40,7 +40,7 @@ hardware_interface::CallbackReturn DiffBotSystemHardware::on_init(
             if (joint.command_interfaces.size() != 1)
             {
                 RCLCPP_FATAL(
-                    rclcpp::get_logger("DiffDriverKfcHardware"),
+                    rclcpp::get_logger("DiffKfc"),
                     "Joint '%s' has %zu command interfaces found. 1 expected.", joint.name.c_str(),
                     joint.command_interfaces.size());
                 return hardware_interface::CallbackReturn::ERROR;
@@ -49,7 +49,7 @@ hardware_interface::CallbackReturn DiffBotSystemHardware::on_init(
             if (joint.command_interfaces[0].name != hardware_interface::HW_IF_VELOCITY)
             {
                 RCLCPP_FATAL(
-                    rclcpp::get_logger("DiffDriverKfcHardware"),
+                    rclcpp::get_logger("DiffKfc"),
                     "Joint '%s' have %s command interfaces found. '%s' expected.", joint.name.c_str(),
                     joint.command_interfaces[0].name.c_str(), hardware_interface::HW_IF_VELOCITY);
                 return hardware_interface::CallbackReturn::ERROR;
@@ -58,7 +58,7 @@ hardware_interface::CallbackReturn DiffBotSystemHardware::on_init(
             if (joint.state_interfaces.size() != 2)
             {
                 RCLCPP_FATAL(
-                    rclcpp::get_logger("DiffDriverKfcHardware"),
+                    rclcpp::get_logger("DiffKfc"),
                     "Joint '%s' has %zu state interface. 2 expected.", joint.name.c_str(),
                     joint.state_interfaces.size());
                 return hardware_interface::CallbackReturn::ERROR;
@@ -67,7 +67,7 @@ hardware_interface::CallbackReturn DiffBotSystemHardware::on_init(
             if (joint.state_interfaces[0].name != hardware_interface::HW_IF_POSITION)
             {
                 RCLCPP_FATAL(
-                    rclcpp::get_logger("DiffDriverKfcHardware"),
+                    rclcpp::get_logger("DiffKfc"),
                     "Joint '%s' have '%s' as first state interface. '%s' expected.", joint.name.c_str(),
                     joint.state_interfaces[0].name.c_str(), hardware_interface::HW_IF_POSITION);
                 return hardware_interface::CallbackReturn::ERROR;
@@ -76,7 +76,7 @@ hardware_interface::CallbackReturn DiffBotSystemHardware::on_init(
             if (joint.state_interfaces[1].name != hardware_interface::HW_IF_VELOCITY)
             {
                 RCLCPP_FATAL(
-                    rclcpp::get_logger("DiffDriverKfcHardware"),
+                    rclcpp::get_logger("DiffKfc"),
                     "Joint '%s' have '%s' as second state interface. '%s' expected.", joint.name.c_str(),
                     joint.state_interfaces[1].name.c_str(), hardware_interface::HW_IF_VELOCITY);
                 return hardware_interface::CallbackReturn::ERROR;
@@ -86,7 +86,7 @@ hardware_interface::CallbackReturn DiffBotSystemHardware::on_init(
         return hardware_interface::CallbackReturn::SUCCESS;
     }
 
-    std::vector<hardware_interface::StateInterface> DiffDriverKfcHardware::export_state_interfaces()
+    std::vector<hardware_interface::StateInterface> DiffKfc::export_state_interfaces()
     {
         std::vector<hardware_interface::StateInterface> state_interfaces;
 
@@ -103,7 +103,7 @@ hardware_interface::CallbackReturn DiffBotSystemHardware::on_init(
         return state_interfaces;
     }
 
-    std::vector<hardware_interface::CommandInterface> DiffDriverKfcHardware::export_command_interfaces()
+    std::vector<hardware_interface::CommandInterface> DiffKfc::export_command_interfaces()
     {
         std::vector<hardware_interface::CommandInterface> command_interfaces;
 
@@ -129,13 +129,13 @@ hardware_interface::CallbackReturn DiffBotSystemHardware::on_init(
     }
 
 
-    hardware_interface::return_type DiffDriverKfcHardware::read(
+    hardware_interface::return_type DiffKfc::read(
         const rclcpp::Time& /*time*/, const rclcpp::Duration& period)
     {
         return hardware_interface::return_type::OK;
     }
 
-    hardware_interface::return_type diffdriver::DiffDriverKfcHardware::write(
+    hardware_interface::return_type diffdriver::DiffKfc::write(
         const rclcpp::Time& /*time*/, const rclcpp::Duration& /*period*/)
     {
 
@@ -158,4 +158,4 @@ hardware_interface::CallbackReturn DiffBotSystemHardware::on_init(
 
 #include "pluginlib/class_list_macros.hpp"
 PLUGINLIB_EXPORT_CLASS(
-    kafeiche_drivers::DiffDriverKfcHardware, hardware_interface::SystemInterface)
+    kafeiche_drivers::DiffKfc, hardware_interface::SystemInterface)
