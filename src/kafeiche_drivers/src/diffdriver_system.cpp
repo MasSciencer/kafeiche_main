@@ -1,4 +1,4 @@
-#include "kafeiche_drivers/diffdriver_system.hpp"
+﻿#include "kafeiche_drivers/diffdriver_system.hpp"
 
 #include <chrono>
 #include <cmath>
@@ -9,6 +9,7 @@
 #include "hardware_interface/types/hardware_interface_type_values.hpp"
 #include "rclcpp/rclcpp.hpp"
 #include "control_toolbox/pid.hpp"
+
 
 
 namespace kafeiche_drivers
@@ -23,11 +24,17 @@ hardware_interface::CallbackReturn DiffKfc::on_init(
             return hardware_interface::CallbackReturn::ERROR;
         }
 
-        cfg_.left_wheel_name = info_.hardware_parameters["left_wheel_joint"];
-        cfg_.right_wheel_name = info_.hardware_parameters["right_wheel_joint"];
+
+        cfg_.left_wheel_name = info_.hardware_parameters["left_wheel_name"];
+        cfg_.right_wheel_name = info_.hardware_parameters["right_wheel_name"];
 
         wheel_l_.setup(cfg_.left_wheel_name);
         wheel_r_.setup(cfg_.right_wheel_name);
+
+
+
+
+
 
 
         for (const hardware_interface::ComponentInfo& joint : info_.joints)
@@ -115,8 +122,49 @@ hardware_interface::CallbackReturn DiffKfc::on_init(
     hardware_interface::CallbackReturn DiffKfc::on_configure(
         const rclcpp_lifecycle::State& /*previous_state*/)
     {
+
+        // Adjustment of pid
+        pid_left_.initPid(P_p, I_p, D_p, i_max_p, i_min_p);
+        pid_right_.initPid(P_p, I_p, D_p, i_max_p, i_min_p);
+
+        // Implementation sub and read
+        auto node = rclcpp::Node::make_shared("diffdriver_sub");
+
+        left_velocity_sub_ = node->create_subscription<std_msgs::msg::Float64>(
+            "/kfc/left_wheel/current_velocity", rclcpp::QoS(10),
+            [this](const std_msgs::msg::Float64::SharedPtr msg) {
+                wheel_l_.vel = msg->data;
+            });
+
+        left_position_sub_ = node->create_subscription<std_msgs::msg::Float64>(
+            "/kfc/left_wheel/position", rclcpp::QoS(10),
+            [this](const std_msgs::msg::Float64::SharedPtr msg) {
+                wheel_l_.pos = msg->data;
+            });
+        right_velocity_sub_ = node->create_subscription<std_msgs::msg::Float64>(
+            "/kfc/right_wheel/current_velocity", rclcpp::QoS(10),
+            [this](const std_msgs::msg::Float64::SharedPtr msg) {
+                wheel_r_.vel = msg->data;
+            });
+
+        right_position_sub_ = node->create_subscription<std_msgs::msg::Float64>(
+            "/kfc/right_wheel/position", rclcpp::QoS(10),
+            [this](const std_msgs::msg::Float64::SharedPtr msg) {
+                wheel_r_.pos = msg->data;
+            });
+
+        // Implementation pub 
+        rclcpp::Publisher<std_msgs::msg::Float64>::SharedPtr left_rpm_pub_;
+        rclcpp::Publisher<std_msgs::msg::Float64>::SharedPtr right_rpm_pub_;
+        left_rpm_pub_ = node->create_publisher<std_msgs::msg::Float64>(
+            "/kfc/left_wheel/rpm", rclcpp::QoS(10));
+        right_rpm_pub_ = node->create_publisher<std_msgs::msg::Float64>(
+            "/kfc/right_wheel/rpm", rclcpp::QoS(10));
+
+
         return hardware_interface::CallbackReturn::SUCCESS;
     }
+
 
 
     hardware_interface::return_type DiffKfc::read(
@@ -128,8 +176,24 @@ hardware_interface::CallbackReturn DiffKfc::on_init(
     hardware_interface::return_type kafeiche_drivers::DiffKfc::write(
         const rclcpp::Time& /*time*/, const rclcpp::Duration& /*period*/)
     {
+        auto left_rpm_message = std_msgs::msg::Float64;
+        auto right_rpm_message = std_msgs::msg::Float64;
+        static rclcpp::Time last_time = time;
+        double dt = (time - last_time).nanoseconds() * 1e-9;  // nanosec
+        last_time = time;
+
+        // Publisher RPM
+        left_rpm_message.data = pid_left_.computeCommand(wheel_l_.cmd - wheel_l_.vel, dt); // Implemention of PID for left
+        left_rpm_pub_->publish(left_rpm_message);
+
+        std_msgs::msg::Float64 right_rpm_msg;
+        right_rpm_message.data = pid_right_.computeCommand(wheel_r_.cmd - wheel_r_.vel, dt); // Implemention of PID for right
+        right_rpm_pub_->publish(right_rpm_message);
+
         return hardware_interface::return_type::OK;
     };
+
+
 }  // end namespace
 
 #include "pluginlib/class_list_macros.hpp"

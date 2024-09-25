@@ -2,7 +2,7 @@
 <robot
   name="kafeiche"
   xmlns:xacro="http://www.ros.org/wiki/xacro">
-		<ros2_control name="Diffdriver_system" type="system">
+		<ros2_control name="diffriver_system" type="system">
 			<hardware>
 				<plugin>kafeiche_drivers/DiffKfc</plugin>
 

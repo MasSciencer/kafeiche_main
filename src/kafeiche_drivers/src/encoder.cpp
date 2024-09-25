@@ -48,10 +48,10 @@ EncodersPair::EncodersPair(float update_rate) :
     _right_wheel_position(0.0f)
 {
     // Publishers
-    _left_wheel_velocity_pub = this->create_publisher<std_msgs::msg::Float64>("/kfc/left_wheel/current_velocity", 10);
-    _right_wheel_velocity_pub = this->create_publisher<std_msgs::msg::Float64>("/kfc/right_wheel/current_velocity", 10);
-    _left_wheel_position_pub = this->create_publisher<std_msgs::msg::Float64>("/kfc/left_wheel/position", 10);
-    _right_wheel_position_pub = this->create_publisher<std_msgs::msg::Float64>("/kfc/right_wheel/position", 10);
+    _left_wheel_velocity_pub = this->create_publisher<std_msgs::msg::Float64>("/kfc/left_wheel/current_velocity", rclcpp::QoS(10));
+    _right_wheel_velocity_pub = this->create_publisher<std_msgs::msg::Float64>("/kfc/right_wheel/current_velocity", rclcpp::QoS(10));
+    _left_wheel_position_pub = this->create_publisher<std_msgs::msg::Float64>("/kfc/left_wheel/position", rclcpp::QoS(10));
+    _right_wheel_position_pub = this->create_publisher<std_msgs::msg::Float64>("/kfc/right_wheel/position", rclcpp::QoS(10));
 
     // Timer with a defined update rate
     auto period = std::chrono::duration<float>(update_rate);
