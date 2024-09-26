@@ -22,12 +22,10 @@
     <xacro:include filename="$(find kafeiche_description)/urdf/kafeiche_right_wheel.xacro" />
 
 	<!-- Ros2 Control hardware interfaces -->
-	<xacro:include filename="kafeiche_control.xacro" />
+	<xacro:include filename="$(find kafeiche_description)/urdf/kafeiche_control.xacro" />
 
-	<!-- Link for yaml -->
-	<parameters>$(find kafeiche_drivers)/config/kafeiche_controllers.yaml</parameters>
-	
-
+	<!-- Link for yaml <parameters>$(find kafeiche_drivers)/config/kafeiche_controllers.yaml</parameters>-->
+		
   <link
     name="kafeiche_base">
     <inertial>

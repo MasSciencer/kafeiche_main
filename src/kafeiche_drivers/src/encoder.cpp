@@ -41,7 +41,7 @@ private:
 };
 
 EncodersPair::EncodersPair(float update_rate) :
-    Node("encoders_pair"),
+    Node("encoders_pub"),
     _encoder_left(),
     _encoder_right(),
     _left_wheel_position(0.0f),

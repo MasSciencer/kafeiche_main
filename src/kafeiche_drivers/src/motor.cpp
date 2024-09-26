@@ -5,7 +5,7 @@
 class StepperMotorNode : public rclcpp::Node {
 public:
     StepperMotorNode()
-        : Node("motor_subscriber")
+        : Node("motor_sub")
     {
         left_motor_ = std::make_shared<StepperMotorWiringPi>(MOTOR_LEFT_DIR_PIN, MOTOR_LEFT_STEP_PIN, MOTOR_ENABLE_PIN);
         right_motor_ = std::make_shared<StepperMotorWiringPi>(MOTOR_RIGHT_DIR_PIN, MOTOR_RIGHT_STEP_PIN, MOTOR_ENABLE_PIN);

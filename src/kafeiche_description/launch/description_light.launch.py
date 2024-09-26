@@ -86,9 +86,9 @@ def generate_launch_description():
 
     #summary
     nodes = [
-        #control_node, //Needed test
-        #robot_state_pub_node, //Needed test
-        #joint_state_broadcaster_spawner, //Needed test
+        control_node,
+        robot_state_pub_node, 
+        joint_state_broadcaster_spawner, 
         hardware_encoder,
         hardware_motor,
         #delay_robot_controller_spawner_after_joint_state_broadcaster_spawner, //Needed test
