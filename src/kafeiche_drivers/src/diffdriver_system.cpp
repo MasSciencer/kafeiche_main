@@ -1,4 +1,5 @@
 ﻿#include "kafeiche_drivers/diffdriver_system.hpp"
+#include "kafeiche_drivers/diffdriver_system_sub.hpp"
 
 #include <chrono>
 #include <cmath>
@@ -24,18 +25,11 @@ hardware_interface::CallbackReturn DiffKfc::on_init(
             return hardware_interface::CallbackReturn::ERROR;
         }
 
-
         cfg_.left_wheel_name = info_.hardware_parameters["left_wheel_name"];
         cfg_.right_wheel_name = info_.hardware_parameters["right_wheel_name"];
 
         wheel_l_.setup(cfg_.left_wheel_name);
         wheel_r_.setup(cfg_.right_wheel_name);
-
-
-
-
-
-
 
         for (const hardware_interface::ComponentInfo& joint : info_.joints)
         {
@@ -122,77 +116,48 @@ hardware_interface::CallbackReturn DiffKfc::on_init(
     hardware_interface::CallbackReturn DiffKfc::on_configure(
         const rclcpp_lifecycle::State& /*previous_state*/)
     {
-
         // Adjustment of pid
         pid_left_.initPid(P_p, I_p, D_p, i_max_p, i_min_p);
         pid_right_.initPid(P_p, I_p, D_p, i_max_p, i_min_p);
 
-        // Implementation sub and read
-        auto node = rclcpp::Node::make_shared("diffdriver_sub");
+        // Execute node for sub
+        auto node = std::make_shared<DiffSubscriber>();
 
-        left_velocity_sub_ = node->create_subscription<std_msgs::msg::Float64>(
-            "/kfc/left_wheel/current_velocity", rclcpp::QoS(10),
-            [this](const std_msgs::msg::Float64::SharedPtr msg) {
-                wheel_l_.vel = msg->data;
-            });
+        // Read from topics
+        wheel_l_.vel = get_left_wheel_velocity();
+        wheel_l_.pos = get_left_wheel_position();
+        wheel_r_.vel = get_right_wheel_velocity();
+        wheel_r_.pos = get_right_wheel_position();
 
-        left_position_sub_ = node->create_subscription<std_msgs::msg::Float64>(
-            "/kfc/left_wheel/position", rclcpp::QoS(10),
-            [this](const std_msgs::msg::Float64::SharedPtr msg) {
-                wheel_l_.pos = msg->data;
-            });
-        right_velocity_sub_ = node->create_subscription<std_msgs::msg::Float64>(
-            "/kfc/right_wheel/current_velocity", rclcpp::QoS(10),
-            [this](const std_msgs::msg::Float64::SharedPtr msg) {
-                wheel_r_.vel = msg->data;
-            });
+        // Создаем ноду
+        auto node = rclcpp::Node::make_shared("wheel_rpm_node");
 
-        right_position_sub_ = node->create_subscription<std_msgs::msg::Float64>(
-            "/kfc/right_wheel/position", rclcpp::QoS(10),
-            [this](const std_msgs::msg::Float64::SharedPtr msg) {
-                wheel_r_.pos = msg->data;
-            });
+        // Создаем паблишеры
+        auto left_rpm_pub = node->create_publisher<std_msgs::msg::Float64>("/kfc/left_wheel/rpm", rclcpp::QoS(10));
+        auto right_rpm_pub = node->create_publisher<std_msgs::msg::Float64>("/kfc/right_wheel/rpm", rclcpp::QoS(10));
 
-        // Implementation pub 
-        rclcpp::Publisher<std_msgs::msg::Float64>::SharedPtr left_rpm_pub_;
-        rclcpp::Publisher<std_msgs::msg::Float64>::SharedPtr right_rpm_pub_;
-        left_rpm_pub_ = node->create_publisher<std_msgs::msg::Float64>(
-            "/kfc/left_wheel/rpm", rclcpp::QoS(10));
-        right_rpm_pub_ = node->create_publisher<std_msgs::msg::Float64>(
-            "/kfc/right_wheel/rpm", rclcpp::QoS(10));
+        // Создаем сообщения
+        std_msgs::msg::Float64 left_rpm_msg;
+        std_msgs::msg::Float64 right_rpm_msg;
 
+        // Инициализация времени
+        rclcpp::Time current_time = node->now();
+        rclcpp::Time last_time = current_time;  // Это начальное время
+
+        // Цикл, например, внутри таймера или управления:
+        current_time = node->now();  // Текущее время
+        double dt = (current_time - last_time).nanoseconds() * 1e-9;  // Перевод в секунды
+        last_time = current_time;  // Обновляем время
+
+        // Сглаживание значений через PID
+        left_rpm_msg.data = pid_left_.computeCommand(wheel_l_.cmd - wheel_l_.vel, dt);
+        left_rpm_pub->publish(left_rpm_msg);
+
+        right_rpm_msg.data = pid_right_.computeCommand(wheel_r_.cmd - wheel_r_.vel, dt);
+        right_rpm_pub->publish(right_rpm_msg);
 
         return hardware_interface::CallbackReturn::SUCCESS;
     }
-
-
-
-    hardware_interface::return_type DiffKfc::read(
-        const rclcpp::Time& /*time*/, const rclcpp::Duration& period)
-    {
-        return hardware_interface::return_type::OK;
-    }
-
-    hardware_interface::return_type kafeiche_drivers::DiffKfc::write(
-        const rclcpp::Time& /*time*/, const rclcpp::Duration& /*period*/)
-    {
-        auto left_rpm_message = std_msgs::msg::Float64;
-        auto right_rpm_message = std_msgs::msg::Float64;
-        static rclcpp::Time last_time = time;
-        double dt = (time - last_time).nanoseconds() * 1e-9;  // nanosec
-        last_time = time;
-
-        // Publisher RPM
-        left_rpm_message.data = pid_left_.computeCommand(wheel_l_.cmd - wheel_l_.vel, dt); // Implemention of PID for left
-        left_rpm_pub_->publish(left_rpm_message);
-
-        std_msgs::msg::Float64 right_rpm_msg;
-        right_rpm_message.data = pid_right_.computeCommand(wheel_r_.cmd - wheel_r_.vel, dt); // Implemention of PID for right
-        right_rpm_pub_->publish(right_rpm_message);
-
-        return hardware_interface::return_type::OK;
-    };
-
 
 }  // end namespace
 
