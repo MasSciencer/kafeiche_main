@@ -1,5 +1,4 @@
 ﻿#include "kafeiche_drivers/diffdriver_system.hpp"
-#include "kafeiche_drivers/diffdriver_system_sub.hpp"
 
 #include <chrono>
 #include <cmath>
@@ -120,6 +119,14 @@ hardware_interface::CallbackReturn DiffKfc::on_init(
         pid_left_.initPid(P_p, I_p, D_p, i_max_p, i_min_p);
         pid_right_.initPid(P_p, I_p, D_p, i_max_p, i_min_p);
 
+
+
+        return hardware_interface::CallbackReturn::SUCCESS;
+    }
+    
+    hardware_interface::return_type DiffKfc::read(
+        const rclcpp::Time & /*time*/, const rclcpp::Duration & /*period*/)
+    {
         // Execute node for sub
         auto node = std::make_shared<DiffSubscriber>();
 
@@ -128,11 +135,17 @@ hardware_interface::CallbackReturn DiffKfc::on_init(
     	wheel_l_.pos = node->get_left_wheel_position();
     	wheel_r_.vel = node->get_right_wheel_velocity();
     	wheel_r_.pos = node->get_right_wheel_position();
+        return hardware_interface::return_type::OK;
+    }
 
+    hardware_interface::return_type DiffKfc::write(
+        const rclcpp::Time& /*time*/, const rclcpp::Duration& /*period*/)
+    {
+        auto node = std::make_shared<DiffSubscriber>();
 
         // Создаем паблишеры
-        auto left_rpm_pub = node->create_publisher<std_msgs::msg::Float64>("/kfc/left_wheel/rpm", rclcpp::QoS(10));
-        auto right_rpm_pub = node->create_publisher<std_msgs::msg::Float64>("/kfc/right_wheel/rpm", rclcpp::QoS(10));
+        auto left_rpm_pub = node->create_publisher<std_msgs::msg::Float64>("/kfc/left_wheel/target_velocity", rclcpp::QoS(RATE));
+        auto right_rpm_pub = node->create_publisher<std_msgs::msg::Float64>("/kfc/right_wheel/target_velocity", rclcpp::QoS(RATE));
 
         // Создаем сообщения
         std_msgs::msg::Float64 left_rpm_msg;
@@ -153,20 +166,6 @@ hardware_interface::CallbackReturn DiffKfc::on_init(
 
         right_rpm_msg.data = pid_right_.computeCommand(wheel_r_.cmd - wheel_r_.vel, dt);
         right_rpm_pub->publish(right_rpm_msg);
-        
-
-        return hardware_interface::CallbackReturn::SUCCESS;
-    }
-    
-    hardware_interface::return_type DiffKfc::read(
-        const rclcpp::Time& /*time*/, const rclcpp::Duration& period)
-    {
-        return hardware_interface::return_type::OK;
-    }
-
-    hardware_interface::return_type DiffKfc::write(
-        const rclcpp::Time& /*time*/, const rclcpp::Duration& /*period*/)
-    {
 
         return hardware_interface::return_type::OK;
 };

@@ -1,19 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- This URDF was automatically created by SolidWorks to URDF Exporter! Originally created by Stephen Brawner (brawner@gmail.com) 
-     Commit Version: 1.6.0-4-g7f85cfe  Build Version: 1.6.7995.38578
-     For more information, please see http://wiki.ros.org/sw_urdf_exporter -->
 <robot
   name="kafeiche"
   xmlns:xacro="http://www.ros.org/wiki/xacro">
 	
-	<!-- Variables -->
-	<xacro:property name="clearance" value="0.15" />
-	
-	<!-- Matherials -->
+    <xacro:property name="clearance" value="0.15" />
     <xacro:include filename="$(find kafeiche_description)/urdf/kafeiche_materials.xacro" />
- 
-    
-    <!-- Wheels and bases for them -->
+
     <xacro:include filename="$(find kafeiche_description)/urdf/kafeiche_front_wheel_base.xacro" />
     <xacro:include filename="$(find kafeiche_description)/urdf/kafeiche_front_wheel.xacro" />
     <xacro:include filename="$(find kafeiche_description)/urdf/kafeiche_left_wheel_base.xacro" />
@@ -21,10 +13,8 @@
     <xacro:include filename="$(find kafeiche_description)/urdf/kafeiche_right_wheel_base.xacro" />
     <xacro:include filename="$(find kafeiche_description)/urdf/kafeiche_right_wheel.xacro" />
 
-	<!-- Ros2 Control hardware interfaces -->
-	<xacro:include filename="$(find kafeiche_description)/urdf/kafeiche_control.xacro" />
-
-	<!-- Link for yaml <parameters>$(find kafeiche_drivers)/config/kafeiche_controllers.yaml</parameters>-->
+    <xacro:include filename="$(find kafeiche_description)/urdf/kafeiche_control.xacro" />
+    <parameters>$(find kafeiche_drivers)/config/kafeiche_controllers.yaml</parameters>
 		
   <link
     name="kafeiche_base">

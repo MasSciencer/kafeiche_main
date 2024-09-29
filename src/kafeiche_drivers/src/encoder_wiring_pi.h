@@ -11,20 +11,21 @@
 
 #define CHANNEL0 0
 #define CHANNEL1 1
-#define SPI_SPEED 200000   // Скорость SPI (0.2 MHz)
+#define SPI_SPEED 500000   // Скорость SPI (0.5 MHz)
 #define REGx03 0x83
 #define REGx04 0x84
 #define MT6816_CPR 16384
 #define RATIO 3.7
 #define RADIUS 0.075
-
+#define RATE 50
+ 
 class EncoderWiringPi {
 public:
     EncoderWiringPi();
 
     // Публичная функция для получения угла
-    float get_angle_left();
-    float get_angle_right();
+    float get_angle_left(); //radii
+    float get_angle_right(); //radii
     float get_del_left();
     float get_del_right();
 
