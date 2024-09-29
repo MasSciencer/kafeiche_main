@@ -17,7 +17,7 @@
 #define MT6816_CPR 16384
 #define RATIO 3.7
 #define RADIUS 0.075
-#define RATE 50
+#define RATE 20
  
 class EncoderWiringPi {
 public:

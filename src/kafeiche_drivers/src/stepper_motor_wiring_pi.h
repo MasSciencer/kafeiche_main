@@ -59,14 +59,14 @@ StepperMotorWiringPi::~StepperMotorWiringPi() {
     }
 }
 
-// get in m/s and transform into current_rpm
+// get in m/s and transform into rpm 
 void StepperMotorWiringPi::setSpeed(int16_t target_vel) { 
     current_rpm = target_vel / (2 * M_PI * 0.075) * 60 * 3.7; //0.075 - radius of wheel
 }
 
 void StepperMotorWiringPi::run() {
     while (running_) {
-        if (std::abs(current_rpm) > 100) {
+        if (std::abs(current_rpm) > 1) {
             // Ограничиваем current_rpm до 1200
             int16_t effective_rpm = std::min(std::abs(current_rpm), (int)1200);
             uint16_t step_delay = rpmToDelay(effective_rpm);

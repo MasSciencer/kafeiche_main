@@ -1,5 +1,5 @@
-#ifndef KAFEICHE_DRIVERS_DIFFDRIVER_SYSTEM_HPP
-#define KAFEICHE_DRIVERS_DIFFDRIVER_SYSTEM_HPP
+#ifndef DIFFDRIVER_SYSTEM_HPP
+#define DIFFDRIVER_SYSTEM_HPP
 #define P_p 6.0 //param p The proportional gain.
 #define I_p 1.0 //param i The integral gain.
 #define D_p 2.0 //param d The derivative gain.

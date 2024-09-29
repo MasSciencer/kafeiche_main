@@ -1,4 +1,6 @@
-﻿#include "kafeiche_drivers/diffdriver_system.hpp"
+#include "kafeiche_drivers/diffdriver_system.hpp"
+#include "kafeiche_drivers/diffdriver_system_sub.hpp"
+#include "kafeiche_drivers/diffdriver_system_pub.hpp"
 
 #include <chrono>
 #include <cmath>
@@ -111,6 +113,7 @@ hardware_interface::CallbackReturn DiffKfc::on_init(
 
         return command_interfaces;
     }
+    
 
     hardware_interface::CallbackReturn DiffKfc::on_configure(
         const rclcpp_lifecycle::State& /*previous_state*/)
@@ -125,49 +128,49 @@ hardware_interface::CallbackReturn DiffKfc::on_init(
     }
     
     hardware_interface::return_type DiffKfc::read(
-        const rclcpp::Time & /*time*/, const rclcpp::Duration & /*period*/)
-    {
-        // Execute node for sub
-        auto node = std::make_shared<DiffSubscriber>();
+    const rclcpp::Time & /*time*/, const rclcpp::Duration & /*period*/)
+{
+    // Лучше создать экземпляр DiffSubscriber один раз, а не каждый раз в функции read
+    static auto node = std::make_shared<DiffSubscriber>();
 
-        // Read from topics
-    	wheel_l_.vel = node->get_left_wheel_velocity();
-    	wheel_l_.pos = node->get_left_wheel_position();
-    	wheel_r_.vel = node->get_right_wheel_velocity();
-    	wheel_r_.pos = node->get_right_wheel_position();
-        return hardware_interface::return_type::OK;
-    }
+    // Чтобы обработать сообщения, необходимо вызвать spin_some
+    rclcpp::spin_some(node); // Обрабатываем входящие сообщения
 
-    hardware_interface::return_type DiffKfc::write(
-        const rclcpp::Time& /*time*/, const rclcpp::Duration& /*period*/)
-    {
-        auto node = std::make_shared<DiffSubscriber>();
+    // Читаем данные из подписчиков
+    wheel_l_.vel = node->get_left_wheel_velocity();
+    wheel_l_.pos = node->get_left_wheel_position();
+    wheel_r_.vel = node->get_right_wheel_velocity();
+    wheel_r_.pos = node->get_right_wheel_position();
 
-        // Создаем паблишеры
-        auto left_rpm_pub = node->create_publisher<std_msgs::msg::Float64>("/kfc/left_wheel/target_velocity", rclcpp::QoS(RATE));
-        auto right_rpm_pub = node->create_publisher<std_msgs::msg::Float64>("/kfc/right_wheel/target_velocity", rclcpp::QoS(RATE));
+    return hardware_interface::return_type::OK;
+}
 
-        // Создаем сообщения
-        std_msgs::msg::Float64 left_rpm_msg;
-        std_msgs::msg::Float64 right_rpm_msg;
+hardware_interface::return_type DiffKfc::write(
+    const rclcpp::Time& /*time*/, const rclcpp::Duration& /*period*/)
+{
+    // Лучше создать паблишер один раз, а не каждый раз в функции write
+    static auto diff_publisher = std::make_shared<DiffPublisher>();
 
-        // Инициализация времени
-        rclcpp::Time current_time = node->now();
-        rclcpp::Time last_time = current_time;  // Это начальное время
+    // Инициализация времени
+    static rclcpp::Time last_time = diff_publisher->now();  // Это начальное время
 
-        // Цикл, например, внутри таймера или управления:
-        current_time = node->now();  // Текущее время
-        double dt = (current_time - last_time).nanoseconds() * 1e-9;  // Перевод в секунды
-        last_time = current_time;  // Обновляем время
+    // Получаем текущее время
+    rclcpp::Time current_time = diff_publisher->now();
+    
+    // Вычисляем временной интервал (dt)
+    double dt = (current_time - last_time).nanoseconds() * 1e-9;  // Перевод в секунды
+    last_time = current_time;  // Обновляем время
 
-        // Сглаживание значений через PID
-        left_rpm_msg.data = pid_left_.computeCommand(wheel_l_.cmd - wheel_l_.vel, dt);
-        left_rpm_pub->publish(left_rpm_msg);
+    // Обновляем значения vel для левого и правого колес
+    double left_msg_data = pid_left_.computeCommand(wheel_l_.cmd - wheel_l_.vel, dt);
+    double right_msg_data = pid_right_.computeCommand(wheel_r_.cmd - wheel_r_.vel, dt);
+    
+    diff_publisher->update_velocities(left_msg_data, right_msg_data);
 
-        right_rpm_msg.data = pid_right_.computeCommand(wheel_r_.cmd - wheel_r_.vel, dt);
-        right_rpm_pub->publish(right_rpm_msg);
-
-        return hardware_interface::return_type::OK;
+    // Spin один раз, чтобы обработать коллбеки
+    rclcpp::spin_some(diff_publisher);
+    
+    return hardware_interface::return_type::OK;
 };
 
 }  // end namespace

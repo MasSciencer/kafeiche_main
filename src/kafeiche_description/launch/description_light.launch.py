@@ -86,21 +86,21 @@ def generate_launch_description():
     joint_state_broadcaster_spawner = Node(
         package="controller_manager",
         executable="spawner",
-        arguments=["joint_state_broadcaster", "--controller-manager", "/controller_manager"],
+        arguments=["joint_state_broadcaster"],
     )
     #added throughout delay below
-    robot_controller_spawner = Node(
+    diffdriver_controller_spawner = Node(
         package="controller_manager",
         executable="spawner",
-        arguments=["diffdriver_controller", "--controller-manager", "/controller_manager"],
+        arguments=["diffdriver_controller"],
     )
 
     #added
     # Delay start of robot_controller after `joint_state_broadcaster`
-    delay_robot_controller_spawner_after_joint_state_broadcaster_spawner = RegisterEventHandler(
+    delay_diffdriver_controller_spawner_after_joint_state_broadcaster_spawner = RegisterEventHandler(
         event_handler=OnProcessExit(
             target_action=joint_state_broadcaster_spawner,
-            on_exit=[robot_controller_spawner],
+            on_exit=[diffdriver_controller_spawner],
         )
     )
 
@@ -129,7 +129,7 @@ def generate_launch_description():
         joint_state_broadcaster_spawner, 
         hardware_encoder,
         hardware_motor,
-        delay_robot_controller_spawner_after_joint_state_broadcaster_spawner,
+        delay_diffdriver_controller_spawner_after_joint_state_broadcaster_spawner,
     ]
 
     return LaunchDescription(declared_arguments + nodes)
