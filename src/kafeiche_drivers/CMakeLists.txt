@@ -83,7 +83,13 @@ install(TARGETS kafeiche_drivers
   DESTINATION lib/${PROJECT_NAME}
 )
 
-## EXPORTS
+# Install yaml
+install(
+  DIRECTORY config
+  DESTINATION share/kafeiche_drivers
+)
+
+# EXPORTS
 ament_export_targets(export_kafeiche_drivers HAS_LIBRARY_TARGET)
 ament_export_dependencies(${THIS_PACKAGE_INCLUDE_DEPENDS})
 ament_package()

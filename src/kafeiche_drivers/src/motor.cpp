@@ -5,28 +5,28 @@
 class StepperMotorNode : public rclcpp::Node {
 public:
     StepperMotorNode()
-        : Node("stepper_motors")
+        : Node("motor_sub")
     {
         left_motor_ = std::make_shared<StepperMotorWiringPi>(MOTOR_LEFT_DIR_PIN, MOTOR_LEFT_STEP_PIN, MOTOR_ENABLE_PIN);
         right_motor_ = std::make_shared<StepperMotorWiringPi>(MOTOR_RIGHT_DIR_PIN, MOTOR_RIGHT_STEP_PIN, MOTOR_ENABLE_PIN);
 
         // Подписчики для левого и правого двигателей
         left_motor_target_vel_sub_ = this->create_subscription<std_msgs::msg::Float64>(
-            "/kfc/left_wheel/rpm", 10, std::bind(&StepperMotorNode::leftMotorCallback, this, std::placeholders::_1));
+            "/kfc/left_wheel/target_velocity", rclcpp::QoS(10), std::bind(&StepperMotorNode::leftMotorCallback, this, std::placeholders::_1));
 
         right_motor_target_vel_sub_ = this->create_subscription<std_msgs::msg::Float64>(
-            "/kfc/right_wheel/rpm", 10, std::bind(&StepperMotorNode::rightMotorCallback, this, std::placeholders::_1));
+            "/kfc/right_wheel/target_velocity", rclcpp::QoS(10), std::bind(&StepperMotorNode::rightMotorCallback, this, std::placeholders::_1));
     }
 
 private:
     void leftMotorCallback(const std_msgs::msg::Float64::SharedPtr msg) {
-        int16_t target_rpm = static_cast<int16_t>(msg->data);
-        left_motor_->setSpeed(target_rpm);
+        int16_t target_velocity = static_cast<int16_t>(msg->data);
+        left_motor_->setSpeed(target_velocity);
     }
 
     void rightMotorCallback(const std_msgs::msg::Float64::SharedPtr msg) {
-        int16_t target_rpm = static_cast<int16_t>(msg->data);
-        right_motor_->setSpeed(target_rpm);
+        int16_t target_velocity = static_cast<int16_t>(msg->data);
+        right_motor_->setSpeed(-target_velocity);
     }
 
     std::shared_ptr<StepperMotorWiringPi> left_motor_;

@@ -41,17 +41,17 @@ private:
 };
 
 EncodersPair::EncodersPair(float update_rate) :
-    Node("encoders_pair"),
+    Node("encoders_pub"),
     _encoder_left(),
     _encoder_right(),
     _left_wheel_position(0.0f),
     _right_wheel_position(0.0f)
 {
     // Publishers
-    _left_wheel_velocity_pub = this->create_publisher<std_msgs::msg::Float64>("/kfc/left_wheel/current_velocity", 10);
-    _right_wheel_velocity_pub = this->create_publisher<std_msgs::msg::Float64>("/kfc/right_wheel/current_velocity", 10);
-    _left_wheel_position_pub = this->create_publisher<std_msgs::msg::Float64>("/kfc/left_wheel/position", 10);
-    _right_wheel_position_pub = this->create_publisher<std_msgs::msg::Float64>("/kfc/right_wheel/position", 10);
+    _left_wheel_velocity_pub = this->create_publisher<std_msgs::msg::Float64>("/kfc/left_wheel/current_velocity", rclcpp::QoS(RATE));
+    _right_wheel_velocity_pub = this->create_publisher<std_msgs::msg::Float64>("/kfc/right_wheel/current_velocity", rclcpp::QoS(RATE));
+    _left_wheel_position_pub = this->create_publisher<std_msgs::msg::Float64>("/kfc/left_wheel/position", rclcpp::QoS(RATE));
+    _right_wheel_position_pub = this->create_publisher<std_msgs::msg::Float64>("/kfc/right_wheel/position", rclcpp::QoS(RATE));
 
     // Timer with a defined update rate
     auto period = std::chrono::duration<float>(update_rate);

@@ -1,4 +1,6 @@
 #include "kafeiche_drivers/diffdriver_system.hpp"
+#include "kafeiche_drivers/diffdriver_system_sub.hpp"
+#include "kafeiche_drivers/diffdriver_system_pub.hpp"
 
 #include <chrono>
 #include <cmath>
@@ -9,6 +11,7 @@
 #include "hardware_interface/types/hardware_interface_type_values.hpp"
 #include "rclcpp/rclcpp.hpp"
 #include "control_toolbox/pid.hpp"
+
 
 
 namespace kafeiche_drivers
@@ -23,12 +26,11 @@ hardware_interface::CallbackReturn DiffKfc::on_init(
             return hardware_interface::CallbackReturn::ERROR;
         }
 
-        cfg_.left_wheel_name = info_.hardware_parameters["left_wheel_joint"];
-        cfg_.right_wheel_name = info_.hardware_parameters["right_wheel_joint"];
+        cfg_.left_wheel_name = info_.hardware_parameters["left_wheel_name"];
+        cfg_.right_wheel_name = info_.hardware_parameters["right_wheel_name"];
 
         wheel_l_.setup(cfg_.left_wheel_name);
         wheel_r_.setup(cfg_.right_wheel_name);
-
 
         for (const hardware_interface::ComponentInfo& joint : info_.joints)
         {
@@ -111,25 +113,69 @@ hardware_interface::CallbackReturn DiffKfc::on_init(
 
         return command_interfaces;
     }
+    
 
     hardware_interface::CallbackReturn DiffKfc::on_configure(
         const rclcpp_lifecycle::State& /*previous_state*/)
     {
+        // Adjustment of pid
+        pid_left_.initPid(P_p, I_p, D_p, i_max_p, i_min_p);
+        pid_right_.initPid(P_p, I_p, D_p, i_max_p, i_min_p);
+
+
+
         return hardware_interface::CallbackReturn::SUCCESS;
     }
 
-
+    
     hardware_interface::return_type DiffKfc::read(
-        const rclcpp::Time& /*time*/, const rclcpp::Duration& period)
-    {
-        return hardware_interface::return_type::OK;
-    }
+    const rclcpp::Time & /*time*/, const rclcpp::Duration & /*period*/)
+{
+    // Лучше создать экземпляр DiffSubscriber and DiffPublisher один раз
+    static auto diff_subscriber = std::make_shared<DiffSubscriber>();
+    
+    // Чтобы обработать сообщения, необходимо вызвать spin_some
+    //rclcpp::spin_some(diff_subscriber); // Обрабатываем входящие сообщения
 
-    hardware_interface::return_type kafeiche_drivers::DiffKfc::write(
-        const rclcpp::Time& /*time*/, const rclcpp::Duration& /*period*/)
-    {
-        return hardware_interface::return_type::OK;
-    };
+    // Читаем данные из подписчиков
+    wheel_l_.vel = diff_subscriber->get_left_wheel_velocity();
+    wheel_l_.pos = diff_subscriber->get_left_wheel_position();
+    wheel_r_.vel = diff_subscriber->get_right_wheel_velocity();
+    wheel_r_.pos = diff_subscriber->get_right_wheel_position();
+
+    return hardware_interface::return_type::OK;
+}
+
+
+hardware_interface::return_type DiffKfc::write(
+    const rclcpp::Time& time, const rclcpp::Duration& period)
+{ 
+    static auto diff_publisher = std::make_shared<DiffPublisher>();
+    
+    // Инициализация времени
+    static rclcpp::Time last_time = time;  // Используем переданное время
+
+    // Вычисляем временной интервал (dt)
+    double dt = period.seconds();  // Период уже в секундах
+
+    // Обновляем значения vel для левого и правого колес
+    //double left_msg_data = pid_left_.computeCommand(wheel_l_.cmd - wheel_l_.vel, dt);
+    //double right_msg_data = pid_right_.computeCommand(wheel_r_.cmd - wheel_r_.vel, dt);
+    
+    double left_msg_data = wheel_l_.cmd;
+    double right_msg_data = wheel_r_.cmd;
+
+    diff_publisher->update_velocities(left_msg_data, right_msg_data);
+
+    // Spin один раз, чтобы обработать коллбеки
+    //rclcpp::spin_some(diff_publisher);
+    diff_publisher->process();
+
+    last_time = time;  // Обновляем время
+
+    return hardware_interface::return_type::OK;
+}
+
 }  // end namespace
 
 #include "pluginlib/class_list_macros.hpp"
