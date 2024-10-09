@@ -126,52 +126,55 @@ hardware_interface::CallbackReturn DiffKfc::on_init(
 
         return hardware_interface::CallbackReturn::SUCCESS;
     }
+
     
     hardware_interface::return_type DiffKfc::read(
     const rclcpp::Time & /*time*/, const rclcpp::Duration & /*period*/)
 {
-    // Лучше создать экземпляр DiffSubscriber один раз, а не каждый раз в функции read
-    static auto node = std::make_shared<DiffSubscriber>();
-
+    // Лучше создать экземпляр DiffSubscriber and DiffPublisher один раз
+    static auto diff_subscriber = std::make_shared<DiffSubscriber>();
+    
     // Чтобы обработать сообщения, необходимо вызвать spin_some
-    rclcpp::spin_some(node); // Обрабатываем входящие сообщения
+    //rclcpp::spin_some(diff_subscriber); // Обрабатываем входящие сообщения
 
     // Читаем данные из подписчиков
-    wheel_l_.vel = node->get_left_wheel_velocity();
-    wheel_l_.pos = node->get_left_wheel_position();
-    wheel_r_.vel = node->get_right_wheel_velocity();
-    wheel_r_.pos = node->get_right_wheel_position();
+    wheel_l_.vel = diff_subscriber->get_left_wheel_velocity();
+    wheel_l_.pos = diff_subscriber->get_left_wheel_position();
+    wheel_r_.vel = diff_subscriber->get_right_wheel_velocity();
+    wheel_r_.pos = diff_subscriber->get_right_wheel_position();
 
     return hardware_interface::return_type::OK;
 }
 
+
 hardware_interface::return_type DiffKfc::write(
-    const rclcpp::Time& /*time*/, const rclcpp::Duration& /*period*/)
-{
-    // Лучше создать паблишер один раз, а не каждый раз в функции write
+    const rclcpp::Time& time, const rclcpp::Duration& period)
+{ 
     static auto diff_publisher = std::make_shared<DiffPublisher>();
-
-    // Инициализация времени
-    static rclcpp::Time last_time = diff_publisher->now();  // Это начальное время
-
-    // Получаем текущее время
-    rclcpp::Time current_time = diff_publisher->now();
     
+    // Инициализация времени
+    static rclcpp::Time last_time = time;  // Используем переданное время
+
     // Вычисляем временной интервал (dt)
-    double dt = (current_time - last_time).nanoseconds() * 1e-9;  // Перевод в секунды
-    last_time = current_time;  // Обновляем время
+    double dt = period.seconds();  // Период уже в секундах
 
     // Обновляем значения vel для левого и правого колес
-    double left_msg_data = pid_left_.computeCommand(wheel_l_.cmd - wheel_l_.vel, dt);
-    double right_msg_data = pid_right_.computeCommand(wheel_r_.cmd - wheel_r_.vel, dt);
+    //double left_msg_data = pid_left_.computeCommand(wheel_l_.cmd - wheel_l_.vel, dt);
+    //double right_msg_data = pid_right_.computeCommand(wheel_r_.cmd - wheel_r_.vel, dt);
     
+    double left_msg_data = wheel_l_.cmd;
+    double right_msg_data = wheel_r_.cmd;
+
     diff_publisher->update_velocities(left_msg_data, right_msg_data);
 
     // Spin один раз, чтобы обработать коллбеки
-    rclcpp::spin_some(diff_publisher);
-    
+    //rclcpp::spin_some(diff_publisher);
+    diff_publisher->process();
+
+    last_time = time;  // Обновляем время
+
     return hardware_interface::return_type::OK;
-};
+}
 
 }  // end namespace
 

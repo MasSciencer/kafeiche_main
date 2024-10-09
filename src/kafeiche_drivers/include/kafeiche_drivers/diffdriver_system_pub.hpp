@@ -7,8 +7,7 @@
 #include <chrono>
 #include <functional>
 #include <memory>
-#include <string>
-
+#include <string>]
 
 #define RATE 10 // Gz
 
@@ -29,6 +28,10 @@ public:
     left_vel_ = left_vel;
     right_vel_ = right_vel;
   }
+  
+void process() {
+    rclcpp::spin_some(this->shared_from_this());
+}
 
 private:
   void timer_callback() {
