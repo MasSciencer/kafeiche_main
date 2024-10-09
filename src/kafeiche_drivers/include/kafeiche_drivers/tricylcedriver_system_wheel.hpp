@@ -1,5 +1,5 @@
-#ifndef DIFFDRIVE_SYSTEM_WHEEL_HPP
-#define DIFFDRIVE_SYSTEM_WHEEL_HPP
+#ifndef TRICYLCEDRIVER_SYSTEM_WHEEL_HPP
+#define TRICYLCEDRIVER_SYSTEM_WHEEL_HPP
 
 #include <string>
 #include <cmath>
@@ -30,4 +30,4 @@ public:
 };
 
 
-#endif // DIFFDRIVE_SYSTEM_WHEEL_H
+#endif // TRICYLCEDRIVER_SYSTEM_WHEEL_H

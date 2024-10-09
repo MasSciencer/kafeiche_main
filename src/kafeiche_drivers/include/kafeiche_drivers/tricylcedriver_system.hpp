@@ -1,10 +1,14 @@
-#ifndef DIFFDRIVER_SYSTEM_HPP
-#define DIFFDRIVER_SYSTEM_HPP
-#define P_p 6.0 //param p The proportional gain.
+#ifndef TRICYLCEDRIVER_SYSTEM_HPP
+#define TRICYLCEDRIVER_SYSTEM_HPP
+
+/**#define P_p 6.0 //param p The proportional gain.
 #define I_p 1.0 //param i The integral gain.
 #define D_p 2.0 //param d The derivative gain.
 #define i_max_p 0.3 //param i_max The max integral windup.
 #define i_min_p -0.3 //param i_min The min integral windup.
+**/
+
+//#include "control_toolbox/pid.hpp"
 
 #include <chrono>
 #include <cmath>
@@ -12,8 +16,7 @@
 #include <memory>
 #include <vector>
 
-#include "diffdriver_system_wheel.hpp"
-#include "control_toolbox/pid.hpp"
+#include "tricylcedriver_system_wheel.hpp"
 
 #include "hardware_interface/handle.hpp"
 #include "hardware_interface/hardware_info.hpp"
@@ -31,22 +34,23 @@
 
 namespace kafeiche_drivers
 {
-class DiffKfc : public hardware_interface::SystemInterface
+class TricyKfc : public hardware_interface::SystemInterface
 {
 
 struct Config
 {
             std::string left_wheel_name = "";
             std::string right_wheel_name = "";
-            int pid_p = 0;
-            int pid_d = 0;
-            int pid_i = 0;
-            int pid_o = 0;
+            std::string front_wheel_name = "";
+            //int pid_p = 0;
+            //int pid_d = 0;
+            //int pid_i = 0;
+            //int pid_o = 0;
 };
 
 
     public:
-        RCLCPP_SHARED_PTR_DEFINITIONS(DiffKfc)
+        RCLCPP_SHARED_PTR_DEFINITIONS(TricyKfc)
 
             hardware_interface::CallbackReturn on_init(
                 const hardware_interface::HardwareInfo& info) override;
@@ -70,10 +74,12 @@ struct Config
         Config cfg_;
         Wheel wheel_l_;
         Wheel wheel_r_;
+        Wheel wheel_f_;
 
-        // Implementation PID-control
+        /** Implementation PID - control
         control_toolbox::Pid pid_left_;  // call class Pid for left wheel
         control_toolbox::Pid pid_right_; // call class Pid for right wheel
+        **/
 };
 }
 

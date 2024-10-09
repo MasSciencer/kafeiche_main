@@ -46,7 +46,7 @@ add_executable(motor src/motor.cpp)
 add_library(
   kafeiche_drivers
   SHARED
-  src/diffdriver_system.cpp
+  src/tricylcedriver_system.cpp
 )
 
 target_link_libraries(encoder ${WIRINGPI_LIBRARIES})

@@ -5,56 +5,21 @@ controller_manager:
     joint_state_broadcaster:
       type: joint_state_broadcaster/JointStateBroadcaster
 
-    diffdriver_controller:
-      type: diff_drive_controller/DiffDriveController
+    tricycle_steering_controller:
+      type: steering_controllers_library/SteeringControllersLibrary
 
-diffdriver_controller:
+tricycle_steering_controller:
   ros__parameters:
 
-    left_wheel_names: ["left_wheel_joint"]
-    right_wheel_names: ["right_wheel_joint"]
-    
-    use_stamped_vel: false
-
-    wheel_separation: 0.273
-    wheel_radius: 0.075
-
-    wheel_separation_multiplier: 1.0
-    left_wheel_radius_multiplier: 1.0
-    right_wheel_radius_multiplier: 1.0
-
-    publish_rate: 50.0
-    odom_frame_id: odom
-    base_frame_id: base_footprint
-    pose_covariance_diagonal : [0.001, 0.001, 0.001, 0.001, 0.001, 0.01]
-    twist_covariance_diagonal: [0.001, 0.001, 0.001, 0.001, 0.001, 0.01]
-
+    reference_timeout: 0.1
+    front_steering: true
     open_loop: false
-    position_feedback: true
-    enable_odom_tf: false
-    #Этот параметр управляет публикацией трансформации между системами координат odom_frame_id (одометрия) и base_frame_id (база робота). Если установлен в true, #контроллер будет публиковать преобразование, что позволяет другим компонентам системы (например, визуализаторам или другим узлам) корректно отслеживать положение #робота в пространстве. По умолчанию значение — true, что позволяет поддерживать правильную систему координат в системе ROS2
+    velocity_rolling_window_size: 10
+    position_feedback: false
+    rear_wheels_names: [left_wheel_joint, right_wheel_joint]
+    front_wheels_names: [front_wheel_joint]
 
-
-    cmd_vel_timeout: 0.5
-    publish_limited_velocity: false
-    #velocity_rolling_window_size: 10
-
-    # Velocity and acceleration limits
-    linear.x.has_velocity_limits: true
-    linear.x.has_acceleration_limits: true
-    linear.x.has_jerk_limits: false
-    linear.x.max_velocity: 2.54 # m/s
-    linear.x.min_velocity: -2.54
-    linear.x.max_acceleration: 1.0 # m/s^2
-    linear.x.max_jerk: 0.0
-    linear.x.min_jerk: 0.0
-
-    angular.z.has_velocity_limits: true
-    angular.z.has_acceleration_limits: true
-    angular.z.has_jerk_limits: false
-    angular.z.max_velocity: 1.0 # rad/s
-    angular.z.min_velocity: -1.0
-    angular.z.max_acceleration: 1.0 # rad/s^2
-    angular.z.min_acceleration: -1.0
-    angular.z.max_jerk: 0.0
-    angular.z.min_jerk: 0.0
+    wheelbase: 0.330
+    wheel_track: 0.305
+    front_wheels_radius: 0.070
+    rear_wheels_radius: 0.075

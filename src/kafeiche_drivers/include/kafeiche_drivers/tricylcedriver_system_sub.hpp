@@ -1,31 +1,31 @@
-#ifndef DIFFDRIVER_SYSTEM_SUB_HPP
-#define DIFFDRIVER_SYSTEM_SUB_HPP
+#ifndef TRICYLCEDRIVER_SYSTEM_SUB_HPP
+#define TRICYLCEDRIVER_SYSTEM_SUB_HPP
 
 #include "rclcpp/rclcpp.hpp"
 #include "std_msgs/msg/float64.hpp"
 
 #define RATE 10 //Gz
 
-class DiffSubscriber : public rclcpp::Node {
+class TricySubscriber : public rclcpp::Node {
 public:
-  DiffSubscriber() : Node("diff_sub") {
+  TricySubscriber() : Node("diff_sub") {
     // Подписка на топики для левого колеса
     left_wheel_velocity_subscriber_ = this->create_subscription<std_msgs::msg::Float64>(
       "/kfc/left_wheel/current_velocity", rclcpp::QoS(RATE),
-      std::bind(&DiffSubscriber::left_wheel_velocity_callback, this, std::placeholders::_1));
+      std::bind(&TricySubscriber::left_wheel_velocity_callback, this, std::placeholders::_1));
 
     left_wheel_position_subscriber_ = this->create_subscription<std_msgs::msg::Float64>(
       "/kfc/left_wheel/position", rclcpp::QoS(RATE),
-      std::bind(&DiffSubscriber::left_wheel_position_callback, this, std::placeholders::_1));
+      std::bind(&TricySubscriber::left_wheel_position_callback, this, std::placeholders::_1));
 
     // Подписка на топики для правого колеса
     right_wheel_velocity_subscriber_ = this->create_subscription<std_msgs::msg::Float64>(
       "/kfc/right_wheel/current_velocity", rclcpp::QoS(RATE),
-      std::bind(&DiffSubscriber::right_wheel_velocity_callback, this, std::placeholders::_1));
+      std::bind(&TricySubscriber::right_wheel_velocity_callback, this, std::placeholders::_1));
 
     right_wheel_position_subscriber_ = this->create_subscription<std_msgs::msg::Float64>(
       "/kfc/right_wheel/position", rclcpp::QoS(RATE),
-      std::bind(&DiffSubscriber::right_wheel_position_callback, this, std::placeholders::_1));
+      std::bind(&TricySubscriber::right_wheel_position_callback, this, std::placeholders::_1));
   }
 
   // Геттеры для получения значений извне
