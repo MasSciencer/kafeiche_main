@@ -19,7 +19,7 @@ constexpr uint8_t MOTOR_RIGHT_STEP_PIN = 4;
 class StepperMotorWiringPi {
 public:
     StepperMotorWiringPi(int8_t direction_pin, int8_t step_pin, int8_t enable_pin);
-    void setSpeed(int16_t target_vel);
+    void setSpeed(double target_vel);
     ~StepperMotorWiringPi();
 
 private:
@@ -60,16 +60,27 @@ StepperMotorWiringPi::~StepperMotorWiringPi() {
 }
 
 // get in m/s and transform into rpm 
-void StepperMotorWiringPi::setSpeed(int16_t target_vel) { 
+void StepperMotorWiringPi::setSpeed(double target_vel) { 
     current_rpm = target_vel / (2 * M_PI * 0.075) * 60 * 3.7; //0.075 - radius of wheel
+    /*
+    RCLCPP_INFO(rclcpp::get_logger("StepperMotorWiringPi"), 
+                "Set speed: target velocity = %f, calculated RPM = %d", target_vel, current_rpm.load());
+                */
 }
 
 void StepperMotorWiringPi::run() {
     while (running_) {
-        if (std::abs(current_rpm) > 1) {
+        if (std::abs(current_rpm) > 100) {
             // Ограничиваем current_rpm до 1200
             int16_t effective_rpm = std::min(std::abs(current_rpm), (int)1200);
             uint16_t step_delay = rpmToDelay(effective_rpm);
+            
+                        /*
+                        RCLCPP_INFO(rclcpp::get_logger("StepperMotorWiringPi"),
+                        "Motor running: current RPM = %d, effective RPM = %d, step delay = %d microseconds",
+                        current_rpm.load(), effective_rpm, step_delay);
+                        */
+            
             digitalWrite(_enable_pin, LOW);
             digitalWrite(_direction_pin, current_rpm > 0 ? LOW : HIGH);
 
@@ -78,8 +89,14 @@ void StepperMotorWiringPi::run() {
             digitalWrite(_step_pin, LOW);
             delayMicroseconds(step_delay);
         } else {
+        
+        /*
+        RCLCPP_INFO(rclcpp::get_logger("StepperMotorWiringPi"), 
+                        "Motor stopping: current RPM = %d", current_rpm.load());
+        */
+        
             stop();
-            std::this_thread::sleep_for(std::chrono::milliseconds(100));
+            std::this_thread::sleep_for(std::chrono::milliseconds(200));
         }
     }
 }

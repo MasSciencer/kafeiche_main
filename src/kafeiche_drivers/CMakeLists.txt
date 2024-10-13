@@ -46,7 +46,7 @@ add_executable(motor src/motor.cpp)
 add_library(
   kafeiche_drivers
   SHARED
-  src/tricylcedriver_system.cpp
+  src/tricycledriver_system.cpp
 )
 
 target_link_libraries(encoder ${WIRINGPI_LIBRARIES})

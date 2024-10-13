@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro">
-		<ros2_control name="tricylcedriver_system" type="system">
+		<ros2_control name="tricycledriver_system" type="system">
 			<hardware>
 			
-				<plugin>kafeiche_drivers/TricylceKfc</plugin>
+				<plugin>kafeiche_drivers/TricycleKfc</plugin>
 				
 				<param name="left_wheel_name">left_wheel_joint</param>
 				<param name="right_wheel_name">right_wheel_joint</param>
@@ -11,24 +11,21 @@
 				
 			</hardware>
 
-			<joint name="left_wheel_joint">
-				<command_interface name="velocity" />
-				  <param name="min">-2.54</param>
-				  <param name="max">2.54</param>
-				<state_interface name="velocity" />
-				
-			</joint>
-			<joint name="right_wheel_joint">
-				<command_interface name="velocity" />
-				  <param name="min">-2.54</param>
-				  <param name="max">2.54</param>
-				<state_interface name="velocity" />
-			</joint>
 			<joint name="front_wheel_joint">
 				<command_interface name="position" />
 				<state_interface name="position"/>
 
 			</joint>
+			<joint name="left_wheel_joint">
+				<command_interface name="velocity" />
+				<state_interface name="velocity" />
+				
+			</joint>
+			<joint name="right_wheel_joint">
+				<command_interface name="velocity" />
+				<state_interface name="velocity" />
+			</joint>
+
 			
 	</ros2_control>
 </robot>

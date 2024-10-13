@@ -130,7 +130,7 @@ hardware_interface::CallbackReturn TricyKfc::on_init(
     }
 
     
-    hardware_interface::return_type TricyKfc::read(
+    hardware_interface::return_type TricyKfc::update_reference_from_subscribers(
     const rclcpp::Time & /*time*/, const rclcpp::Duration & /*period*/)
 {
     // Экземпляр TricySubscriber and TricyPublisher

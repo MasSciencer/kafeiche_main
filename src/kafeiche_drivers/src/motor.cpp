@@ -20,12 +20,12 @@ public:
 
 private:
     void leftMotorCallback(const std_msgs::msg::Float64::SharedPtr msg) {
-        int16_t target_velocity = static_cast<int16_t>(msg->data);
+        double target_velocity = static_cast<double>(msg->data);
         left_motor_->setSpeed(target_velocity);
     }
 
     void rightMotorCallback(const std_msgs::msg::Float64::SharedPtr msg) {
-        int16_t target_velocity = static_cast<int16_t>(msg->data);
+        double target_velocity = static_cast<double>(msg->data);
         right_motor_->setSpeed(-target_velocity);
     }
 

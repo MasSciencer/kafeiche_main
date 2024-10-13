@@ -9,6 +9,7 @@
 
   <buildtool_depend>ament_cmake</buildtool_depend>
 
+	<depend>backward_ros</depend>
 	<depend>hardware_interface</depend>
 	<depend>pluginlib</depend>
 	<depend>rclcpp</depend>
@@ -17,13 +18,12 @@
 	<depend>control_toolbox</depend>
 
 	<exec_depend>controller_manager</exec_depend>
-	<exec_depend>diff_drive_controller</exec_depend>
+	<exec_depend>steering_controllers_library</exec_depend>
 	<exec_depend>joint_state_broadcaster</exec_depend>
 	<exec_depend>robot_state_publisher</exec_depend>
 	<exec_depend>ros2controlcli</exec_depend>
 	<exec_depend>ros2launch</exec_depend>
 	<exec_depend>xacro</exec_depend>
-	<exec_depend>ros2launch</exec_depend>
 	
 	
 	<!-- Test dependencies -->
